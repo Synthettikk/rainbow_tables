@@ -130,6 +130,12 @@ int test_using_get_table(const key round_keys[], Chain *tab, const int m, const 
 }
 
 int main(void){
+
+    // Charge les paramètres globaux
+    bool loaded = config_load("./SETTINGS.cfg");
+    printf("%s\n", loaded ? "Settings runtime loaded ? : true" : "Settings runtime loaded ? : false");
+    printf("T_test = %d M_test = %d N_test = %d \n", T_test, M_test, N_test);
+
     Chain table_test[M_test];
 
     key round_keys[11]; // round_keys est calculé dans le test aes

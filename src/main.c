@@ -31,14 +31,17 @@ On a alors retrouvé l'antécédent de y par H -> x_j.
 
 
 int main(void){
+
+    // Charge les paramètres globaux
+    bool loaded = config_load("./SETTINGS.cfg");
+    printf("T = %d M = %d N = %d \n", T, M, N);
+
     Chain table[M];
 
     srand((unsigned)time(NULL));
 
-    /* génère la clé secrète et calcule son chiffré (target) */ 
-    key target;
-
     // on gen une clé secrète (celle qu'aes va utiliser pour chiffrer) et on extend en round_keys
+    key target;
     key master_key;
     get_reduced_key(master_key, 0, N);
     printf("Clé secrète:");

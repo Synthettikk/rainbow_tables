@@ -1,26 +1,9 @@
 
-    Ce que tu dois faire dans ton build
-
-    Compiler chaque .c en .o : gcc -I include -c src/aes.c -o build/aes.o gcc -Iinclude -c src/main.c -o build/main.o etc
-    Lier les .o : gcc build/main.o build/aes.o -o build/myprog
-
-header = interface pour le compilateur ; .c = implémentation compilée en .o ; le linker relie les symboles.
-
-le -I sert à dire au préprocesseur qu'on veut inclure des lib persos
-
-
-    Lier tous les .o en exécutable (ou lib)
-
-    gcc build/foo.o build/bar.o -o build/myprog
-
-    myprog est alors l'éxécutable
-
-
-
 Compile chaque .c en .o (peu importe l'ordre) :
 
 gcc -I include -c src/GF8_Arithmetics.c -o build/GF8_Arithmetics.o
 gcc -I include -c src/helpers.c -o build/helpers.o
+gcc -I include -c src/config.c -o build/config.o
 gcc -I include -c src/aes.c -o build/aes.o
 gcc -I include -c src/reduction.c -o build/reduction.o
 gcc -I include -c src/precalc.c -o build/precalc.o
@@ -30,9 +13,12 @@ gcc -I include -c src/main.c -o build/main.o
 gcc -I include -c tests/tests.c -o tests/tests.o
 
 
-gcc build/GF8_Arithmetics.o build/helpers.o build/aes.o build/reduction.o build/precalc.o build/attack.o build/main.o -lm -o build/prog
-gcc build/GF8_Arithmetics.o build/helpers.o build/aes.o build/reduction.o build/precalc.o build/attack.o tests/tests.o -lm -o tests/tests
+gcc build/GF8_Arithmetics.o build/helpers.o build/config.o build/aes.o build/reduction.o build/precalc.o build/attack.o build/main.o -lm -o build/prog
+gcc build/GF8_Arithmetics.o build/helpers.o build/config.o build/aes.o build/reduction.o build/precalc.o build/attack.o tests/tests.o -lm -o tests/tests
 
 -> Lie tous les .o en éxécutable :
 
 Compilé avec gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+
+Les tests se lancent avec : tests/tests 
+et le programme en lui-même avec : build/prog

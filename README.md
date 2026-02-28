@@ -14,10 +14,12 @@ Rappelons le principe de l'attaque :
 
 On suppose que l'on a une clé secrète d'un AES 128 à retrouver et on suppose que l'on sait que cette clé est dans un espace réduit de taille 40bits -> k in [0, 2^40].
 On choisit m plaintexts (blocs de 128b) connus, concrètement on en prendra qu'un (devrait suffire).
+Un intérêt concret de cette attaque peut être de retrouver, suite à une analyse side channel qui aurait récupéré qu'une partie d'une clé AES,
+les 40 bits restants (du moins si on connaît les positions des bits manquants), et ce bien plus efficacement qu'avec la force brute.
 
 ## PRINCIPE
 
-Faire une recherche exhaustive coûte trop cher : 2^40, le but des rainbow tables est de transferer ce temps de calcul trop long en un précalcul càd un coût mémoire pour que l'attaque soit beaucoup plus rapide.
+Faire une recherche exhaustive coûte trop cher : 2^40. Le but des rainbow tables est de transférer ce temps de calcul trop long en un précalcul, c'est-à-dire un coût mémoire pour que l'attaque soit beaucoup plus rapide.
 L'idée est de partir d'un plaintext et d'une clé random k0 (la clé peut aussi être l'antécédent d'une fonction de hashage),
 de le chiffrer (ou hasher), et de réduire ce chiffré pour qu'il appartienne à l'espace des clés :
 ce qui donne une nouvelle clé k1, puis de recommencer T fois. On obtient alors une chaine de longueur T contenant T clés k_i possibles : k0 -> k1 ... -> kT.
@@ -35,7 +37,7 @@ On stocke M couples (k_0, k_T) -> c'est notre 'rainbow table'.
 
 On part soit d'un plaintext P que l'on chiffre pour obtenir un ciphertext C, soit d'un hashé y.
 On a notre table contenant les couples (x0, xT) venant des chaines x0 -> H(x0) -> R0(H(x0)) = x1 -> H(x1) -> R1(H(x1)) = x2 -> ... -> x_t.
-L'idée est que y peut être (ou est si la table est suffisemment fournie) le résultat intermédiaire d'une des chaînes.
+L'idée est que y peut être (ou est si la table est suffisamment fournie) le résultat intermédiaire d'une des chaînes.
 On reconstruit alors les y_k = y_k = R_k(H(...(R_{t-1}(H(y))...))) pour k entre T-1 et 0 afin de parcourir l'ensemble des 'positions' possibles de la chaine,
 c'est-à-dire l'ensemble des résultats intermédiaires possibles venant de y dans les chaînes.
 Pour chaque k on regarde si la valeur y_kcorrespond à un x_T dans la table.
@@ -50,10 +52,14 @@ Si par contre T = 1, alors pour couvrir toutes les clés cela revient à constru
 la recherche devient alors très rapide : pour un chiffré donné on applique la réduction pour le ramener dans l'espace des clés,
 on cherche alors kT dans la table et on renvoie la k0 correspondante (k0 la bonne clé) -> cest du O(1).
 Donc la longueur T des chaines donne le temps (coût) de calcul, tandis que le nombre M de chaines donne le coût mémoire.
-Rappel : on veut N < M x T de sorte que toutes les clés aient été parcourues par les chaînes.
+Rappel : on veut N < M x T de sorte qu'un maximum de clés aient été parcourues par les chaînes.
 Concrètement si on veut un équilibre on peut prendre M ~ T ~ N^{1/2}, et on peut jouer sur les paramètres M et T pour diminuer soit le temps de
 calcul (en augmentant M et diminuant T, en conservant N < M x T) ou vice versa.
 
 ## Détails mathématiques et choix d'implémentation
 
 Voir le pdf "Rainbow_tables.pdf".
+
+## Choix des paramètres (M, N, T)
+
+Le choix de la taille en bits de l'espace réduit N, du nombre de chaînes M, et de la taille des chaînes T, se fait dans le fichier SETTINGS.cfg (en running time), sans avoir besoin de recompiler.
